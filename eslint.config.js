@@ -6,4 +6,10 @@ export default antfu(
     unocss: true,
     formatters: true,
   },
+  {
+    ignores: [
+      'src/pages/posts/**/*.md',
+      'src/pages/essays/**/*.md',
+    ],
+  },
 )
