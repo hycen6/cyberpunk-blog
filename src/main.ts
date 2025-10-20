@@ -1,0 +1,35 @@
+import type { UserModule } from './types'
+
+import { setupLayouts } from 'virtual:generated-layouts'
+import { ViteSSG } from 'vite-ssg'
+import { routes } from 'vue-router/auto-routes'
+
+import App from './App.vue'
+import '@unocss/reset/tailwind.css'
+import 'uno.css'
+import './styles/main.css'
+import './styles/prose.css'
+import './styles/markdown.css'
+
+// https://github.com/antfu/vite-ssg
+export const createApp = ViteSSG(
+  App,
+  {
+    routes: setupLayouts(routes),
+    scrollBehavior(to, from, savedPosition) {
+      if (savedPosition)
+        return savedPosition
+      else
+        return { top: 0, behavior: 'instant' }
+    },
+    base: import.meta.env.BASE_URL,
+  },
+  (ctx) => {
+    // install all modules under `modules/`
+    Object.values(import.meta.glob<{ install: UserModule }>('./modules/*.ts', {
+      eager: true,
+    }))
+      .forEach(i => i.install?.(ctx))
+    // ctx.app.use(Previewer)
+  },
+)
